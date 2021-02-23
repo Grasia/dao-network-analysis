@@ -7,18 +7,23 @@ import plotly.graph_objects as go
 def plot(df: pd.DataFrame) -> None:
     fig = go.Figure()
 
-    # 50% reputation
-    rep_50: float = sum(df['balance'].tolist()) / 2.0
-    fig.add_hline(y=rep_50, opacity=1, line_color="green")
-
     # mean reputation
     rep_mean: float = sum(df['balance'].tolist()) / len(df)
     fig.add_hline(y=rep_mean, line_dash="dashdot", opacity=1)
 
-    # Add traces
+    # 50% reputation
+    rep_50 = sum(df['balance'].tolist()) / 2.0
+    half = 0
+    added = False
     for i, b in enumerate(df['balance'].tolist()):
+        if not added and (half > rep_50):
+            fig.add_vline(x=f'{i}', opacity=1, line_dash="dashdot")
+            added = True
+    
+        half += b
+
         fig.add_trace(
-            go.Bar(x=[f'{i}'], y=[int(b)])
+            go.Bar(x=[f'{i}'], y=[b])
         )
 
     # Add figure title
@@ -95,6 +100,6 @@ if __name__ == '__main__':
 
     df.pop('balance')
     df['balance'] = balances
-    df = df.sort_values(by=['balance'])
+    df = df.sort_values(by=['balance'], ascending=False)
 
     plot(df=df)
