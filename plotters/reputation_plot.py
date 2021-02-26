@@ -1,3 +1,12 @@
+"""
+   Descp: Plots reputation distribution of a DAO as parameter.
+
+   Created on: 23-feb-2021
+
+   Copyright 2021-2022 Youssef 'FRYoussef' El Faqir El Rhazoui
+        <f.r.youssef@hotmail.com>
+"""
+
 import os
 import sys
 import pandas as pd
