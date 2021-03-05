@@ -103,9 +103,22 @@ def make_graph(users: pd.DataFrame, votes: pd.DataFrame) -> nx.Graph:
 def parse_reputation(df: pd.DataFrame) -> pd.DataFrame:
     dff: pd.DataFrame = df
     balances = []
+    min_b: int = sys.maxsize
+    max_b: int = -1
 
     for i, row in dff.iterrows():
-        balances.append(int(row['balance']))
+        b = int(row['balance'])
+        balances.append(b)
+
+        if b < min_b:
+            min_b = b
+        if b > max_b:
+            max_b = b
+
+    # normalize data between [0, 100]
+    divider = max_b - min_b
+    for i in range(len(balances)):
+        balances[i] = (balances[i] - min_b) / divider * 100
 
     dff.pop('balance')
     dff['balance'] = balances
