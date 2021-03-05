@@ -133,20 +133,20 @@ if __name__ == '__main__':
         print('ERROR: python vote_network.py dao_name')
         exit(1)
 
-    daos: pd.DataFrame = pd.read_csv(os.path.join('data', 'daos.csv'), header=0)
+    daos: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'daos.csv'), header=0)
     daos = daos[daos['name'] == sys.argv[1]]
     if len(daos) == 0:
         print('ERROR: DAO name not found.')
         exit(1)
     
     dao_id: str = daos['id'].tolist()[0]
-    users: pd.DataFrame = pd.read_csv(os.path.join('data', 'reputation_holders.csv'), header=0)
+    users: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'reputation_holders.csv'), header=0)
     users = users[users['dao'] == dao_id]
     users = parse_reputation(df=users)
     users.reset_index(inplace=True)
 
-    votes: pd.DataFrame = pd.read_csv(os.path.join('data', 'votes.csv'), header=0)
+    votes: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'votes.csv'), header=0)
     votes = votes[votes['dao'] == dao_id]
     votes.reset_index(inplace=True)
 
-    nx.write_gml(make_graph(users=users, votes=votes), os.path.join('data', f'{sys.argv[1]}_vote.gml'))
+    nx.write_gml(make_graph(users=users, votes=votes), os.path.join('data', 'network', f'{sys.argv[1]}_vote.gml'))
