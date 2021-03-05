@@ -81,10 +81,16 @@ def get_nodes_and_map(users: pd.DataFrame, stakes: pd.DataFrame) -> Tuple[List[T
     index: int = 0
     hash_index: Dict[str, int] = {}
 
+    # number of stakes attribute
+    n_stakes = stakes.groupby(['staker']).size().reset_index(name='counter')
+
     # add DAO members
     for i, row in users.iterrows():
+        st = n_stakes[n_stakes['staker'] == row['address']]
+        st = 0 if len(st) == 0 else st['counter'].tolist()[0]
+
         nodes.append(
-            (index, {'hash': row['address'], 'member': True})
+            (index, {'hash': row['address'], 'member': True, 'stakes': st})
         )
         hash_index[row['address']] = index
         dao_users.add(row['address'])
@@ -95,8 +101,10 @@ def get_nodes_and_map(users: pd.DataFrame, stakes: pd.DataFrame) -> Tuple[List[T
     non_users: Set[str] = stakers.difference(dao_users)
 
     for nu in non_users:
+        st = n_stakes[n_stakes['staker'] == row['address']]
+        st = 0 if len(st) == 0 else st['counter'].tolist()[0]
         nodes.append(
-            (index, {'hash': nu, 'member': False})
+            (index, {'hash': nu, 'member': False, 'stakes': st})
         )
         hash_index[row['address']] = index
         index += 1
