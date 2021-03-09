@@ -81,6 +81,9 @@ def get_nodes_and_map(users: pd.DataFrame, stakes: pd.DataFrame) -> Tuple[List[T
     index: int = 0
     hash_index: Dict[str, int] = {}
 
+    # order by address in order to get always the same index
+    users = users.sort_values(by=['address'])
+
     # number of stakes attribute
     n_stakes = stakes.groupby(['staker']).size().reset_index(name='counter')
 

@@ -80,6 +80,9 @@ def get_nodes_and_map(users: pd.DataFrame) -> Tuple[List[Tuple[str, Dict]], Dict
     index: int = 0
     hash_index: Dict[str, int] = {}
 
+    # order by address in order to get always the same index
+    users = users.sort_values(by=['address'])
+
     for i, row in users.iterrows():
         nodes.append(
             (index, {'hash': row['address'], 'reputation': row['balance']})
