@@ -110,12 +110,12 @@ def get_nodes_and_map(users: pd.DataFrame, stakes: pd.DataFrame) -> Tuple[List[T
     non_users: Set[str] = stakers.difference(dao_users)
 
     for nu in non_users:
-        st = n_stakes[n_stakes['staker'] == row['address']]
+        st = n_stakes[n_stakes['staker'] == nu]
         st = 0 if len(st) == 0 else st['counter'].tolist()[0]
         nodes.append(
             (index, {'hash': nu, 'member': False, 'stakes': st})
         )
-        hash_index[row['address']] = index
+        hash_index[nu] = index
         index += 1
 
     return (nodes, hash_index)
