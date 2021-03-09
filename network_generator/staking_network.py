@@ -47,14 +47,20 @@ def get_edges_as_list(stakes: pd.DataFrame, hash_index: Dict[str, int]) -> List[
     proposals: Set[str] = set(stakes['proposal'].tolist())
     edges_list: List[Dict] = []
     weight_edges: Dict = dict() # key: list[to, from, weight]
+    counter_stakes: int = 0
 
     # calculate by vote all the edges with weight 1
     for p in proposals:
         pass_stakes: pd.DataFrame = filter_stakes_by_proposal_outcome(proposal=p, outcome='Pass', stakes=stakes)
         fail_stakes: pd.DataFrame = filter_stakes_by_proposal_outcome(proposal=p, outcome='Fail', stakes=stakes)
 
+        if len(pass_stakes) > 0 and len(fail_stakes) > 0:
+            counter_stakes += 1
+
         edges_list.append(make_edges(stakes=pass_stakes, hash_index=hash_index))
         edges_list.append(make_edges(stakes=fail_stakes, hash_index=hash_index))
+
+    print(f'\nThere was {counter_stakes} opposite stakes in the same proposal.\n')
 
     # join all commmon edges increasing weight
     for edges in edges_list:
