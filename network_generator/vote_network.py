@@ -43,7 +43,31 @@ def make_edges(votes: pd.DataFrame, hash_index: Dict[str, int]) -> Dict[str, Tup
     return edges
 
 
-def get_edges_as_list(votes: pd.DataFrame, hash_index: Dict[str, int]) -> List[Tuple[int, int, int]]:
+def make_edges_from_two_inputs(votes_for: pd.DataFrame, votes_againts: pd.DataFrame,
+hash_index: Dict[str, int]) -> Dict[str, Tuple[int, int]]:
+
+    edges: Dict[str, Tuple[str, str]] = dict()
+
+    for i, vote1 in votes_for.iterrows():
+        for j, vote2 in votes_againts.iterrows():
+            e_to   = vote1['voter']
+            e_from = vote2['voter']
+
+            # check if voters are also reputation holders
+            if e_to not in hash_index.keys():
+                continue
+            if e_from not in hash_index.keys():
+                continue
+
+            e_to   = hash_index[e_to]
+            e_from = hash_index[e_from]
+            
+            edges[f'{e_to}{e_from}'] = (e_to, e_from)
+
+    return edges
+
+
+def get_edges_as_list(votes: pd.DataFrame, hash_index: Dict[str, int], same_vote: bool) -> List[Tuple[int, int, int]]:
     proposals: Set[str] = set(votes['proposal'].tolist())
     edges_list: List[Dict] = []
     weight_edges: Dict = dict() # key: list[to, from, weight]
@@ -53,8 +77,11 @@ def get_edges_as_list(votes: pd.DataFrame, hash_index: Dict[str, int]) -> List[T
         pass_votes: pd.DataFrame = filter_votes_by_proposal_outcome(proposal=p, outcome='Pass', votes=votes)
         fail_votes: pd.DataFrame = filter_votes_by_proposal_outcome(proposal=p, outcome='Fail', votes=votes)
 
-        edges_list.append(make_edges(votes=pass_votes, hash_index=hash_index))
-        edges_list.append(make_edges(votes=fail_votes, hash_index=hash_index))
+        if same_vote:
+            edges_list.append(make_edges(votes=pass_votes, hash_index=hash_index))
+            edges_list.append(make_edges(votes=fail_votes, hash_index=hash_index))
+        else:
+            edges_list.append(make_edges_from_two_inputs(votes_for=pass_votes, votes_againts=fail_votes, hash_index=hash_index))
 
     # join all commmon edges increasing weight
     for edges in edges_list:
@@ -93,13 +120,13 @@ def get_nodes_and_map(users: pd.DataFrame) -> Tuple[List[Tuple[str, Dict]], Dict
     return (nodes, hash_index)
 
 
-def make_graph(users: pd.DataFrame, votes: pd.DataFrame) -> nx.Graph:
+def make_graph(users: pd.DataFrame, votes: pd.DataFrame, same_vote: bool) -> nx.Graph:
     graph: nx.Graph = nx.Graph()
 
     nodes, hash_index = get_nodes_and_map(users=users)
     graph.add_nodes_from(nodes_for_adding=nodes)
 
-    graph.add_weighted_edges_from(ebunch_to_add=get_edges_as_list(votes=votes, hash_index=hash_index))
+    graph.add_weighted_edges_from(ebunch_to_add=get_edges_as_list(votes=votes, hash_index=hash_index, same_vote=same_vote))
     return graph
 
 
@@ -132,8 +159,8 @@ def parse_reputation(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
-    if len(sys.argv) != 2:
-        print('ERROR: python vote_network.py dao_name')
+    if len(sys.argv) != 3 or sys.argv[2] not in ['same', 'opposite']:
+        print('ERROR: python vote_network.py dao_name [same, opposite]')
         exit(1)
 
     daos: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'daos.csv'), header=0)
@@ -152,4 +179,11 @@ if __name__ == '__main__':
     votes = votes[votes['dao'] == dao_id]
     votes.reset_index(inplace=True)
 
-    nx.write_gml(make_graph(users=users, votes=votes), os.path.join('data', 'network', f'{sys.argv[1]}_vote.gml'))
+    same_vote: bool = sys.argv[2] == 'same'
+    graph: nx.Graph = make_graph(users=users, votes=votes, same_vote=same_vote)
+    out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_vote.gml')
+    
+    if not same_vote:
+        out_path = os.path.join('data', 'network', f'{sys.argv[1]}_opposite_vote.gml')
+
+    nx.write_gml(graph, out_path)
