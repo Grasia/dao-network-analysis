@@ -132,7 +132,7 @@ def make_graph(users: pd.DataFrame, stakes: pd.DataFrame) -> nx.Graph:
 
 
 if __name__ == '__main__':
-    # Target DAOs --> dxDAO, dOrg
+    # Target DAOs --> dxDAO, dOrg, Genesis Alpha
     if len(sys.argv) != 2:
         print('ERROR: python staking_network.py dao_name')
         exit(1)

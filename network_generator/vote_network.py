@@ -131,7 +131,7 @@ def parse_reputation(df: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    # Target DAOs --> dxDAO, dOrg
+    # Target DAOs --> dxDAO, dOrg, Genesis Alpha
     if len(sys.argv) != 2:
         print('ERROR: python vote_network.py dao_name')
         exit(1)
