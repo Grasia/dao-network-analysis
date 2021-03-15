@@ -87,6 +87,18 @@ def plot(df: pd.DataFrame) -> None:
     fig.show()
 
 
+def gini(list_of_values: list) -> float:
+    sorted_list = sorted(list_of_values)
+    height, area = 0, 0
+
+    for value in sorted_list:
+        height += value
+        area += height - value / 2.
+
+    fair_area = height * len(list_of_values) / 2
+    return (fair_area - area) / fair_area
+
+
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
     if len(sys.argv) != 2:
@@ -110,5 +122,7 @@ if __name__ == '__main__':
     df.pop('balance')
     df['balance'] = balances
     df = df.sort_values(by=['balance'], ascending=False)
+
+    print(f'\nGini of reputation = {gini(list_of_values=balances)}.\n')
 
     plot(df=df)
