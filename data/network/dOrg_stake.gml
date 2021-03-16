@@ -170,30 +170,30 @@ graph [
   node [
     id 24
     label "24"
-    hash "0x7f2a1ef39ea0d470b5669ce105a13c5b3bd8cd31"
+    hash "0xa7d862394234c3480a1f3f278fa710e1a0d2d728"
     member 0
     stakes 1
   ]
   node [
     id 25
     label "25"
-    hash "0x37341cbb14c5f128a70b149726ad8b2ce6f4c793"
+    hash "0xcaa9c1251dfdad81f4175edbd09ba9d9131aca77"
     member 0
-    stakes 1
+    stakes 23
   ]
   node [
     id 26
     label "26"
-    hash "0xa7d862394234c3480a1f3f278fa710e1a0d2d728"
+    hash "0x7f2a1ef39ea0d470b5669ce105a13c5b3bd8cd31"
     member 0
     stakes 1
   ]
   node [
     id 27
     label "27"
-    hash "0xcaa9c1251dfdad81f4175edbd09ba9d9131aca77"
+    hash "0x37341cbb14c5f128a70b149726ad8b2ce6f4c793"
     member 0
-    stakes 23
+    stakes 1
   ]
   edge [
     source 11
@@ -206,8 +206,8 @@ graph [
     weight 3
   ]
   edge [
-    source 27
-    target 27
+    source 25
+    target 25
     weight 5
   ]
 ]

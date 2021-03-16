@@ -181,9 +181,13 @@ if __name__ == '__main__':
 
     same_vote: bool = sys.argv[2] == 'same'
     graph: nx.Graph = make_graph(users=users, votes=votes, same_vote=same_vote)
+
+    r: float = nx.degree_assortativity_coefficient(graph, weight='weight')
+    print(f'\nAssortativity coefficient = {r:3.2f}\n')
+
     out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_vote.gml')
-    
     if not same_vote:
         out_path = os.path.join('data', 'network', f'{sys.argv[1]}_opposite_vote.gml')
 
     nx.write_gml(graph, out_path)
+    print(f'\nNetwork saved in: {out_path}\n')

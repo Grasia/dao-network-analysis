@@ -108,6 +108,7 @@ def get_nodes_and_map(users: pd.DataFrame, stakes: pd.DataFrame) -> Tuple[List[T
     # add non-DAO members
     stakers = set(stakes['staker'].tolist())
     non_users: Set[str] = stakers.difference(dao_users)
+    print(f'\nNon-users = {len(non_users)}, users = {len(stakers.difference(non_users))}\n')
 
     for nu in non_users:
         st = n_stakes[n_stakes['staker'] == nu]
@@ -153,4 +154,11 @@ if __name__ == '__main__':
     stakes = stakes[stakes['dao'] == dao_id]
     stakes.reset_index(inplace=True)
 
-    nx.write_gml(make_graph(users=users, stakes=stakes), os.path.join('data', 'network', f'{sys.argv[1]}_stake.gml'))
+    graph: nx.Graph = make_graph(users=users, stakes=stakes)
+
+    r: float = nx.degree_assortativity_coefficient(graph, weight='weight')
+    print(f'\nAssortativity coefficient = {r:3.2f}\n')
+
+    out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_stake.gml')
+    nx.write_gml(graph, out_path)
+    print(f'\nNetwork saved in: {out_path}\n')
