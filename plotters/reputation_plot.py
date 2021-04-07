@@ -11,6 +11,7 @@ import os
 import sys
 import pandas as pd
 import plotly.graph_objects as go
+from utils.time_filter import filter_date
 
 
 def plot(df: pd.DataFrame) -> None:
@@ -114,6 +115,7 @@ if __name__ == '__main__':
     dao_id: str = daos['id'].tolist()[0]
     df: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'reputation_holders.csv'), header=0)
     df = df[df['dao'] == dao_id]
+    df = filter_date(df=df, date_key='createdAt', date='01/04/2021')
     
     balances = []
     for i, row in df.iterrows():

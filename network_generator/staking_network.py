@@ -12,6 +12,7 @@ import networkx as nx
 import os
 import sys
 from typing import List, Dict, Tuple, Set
+from utils.time_filter import filter_date
 
 
 def filter_stakes_by_proposal_outcome(proposal: str, outcome: str, stakes: pd.DataFrame) -> pd.DataFrame:
@@ -149,10 +150,12 @@ if __name__ == '__main__':
     users: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'reputation_holders.csv'), header=0)
     users = users[users['dao'] == dao_id]
     users.reset_index(inplace=True)
+    users = filter_date(df=users, date_key='createdAt', date='01/04/2021')
 
     stakes: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'stakes.csv'), header=0)
     stakes = stakes[stakes['dao'] == dao_id]
     stakes.reset_index(inplace=True)
+    stakes = filter_date(df=stakes, date_key='createdAt', date='01/04/2021')
 
     graph: nx.Graph = make_graph(users=users, stakes=stakes)
 

@@ -12,6 +12,7 @@ import networkx as nx
 import os
 import sys
 from typing import List, Dict, Tuple, Set
+from utils.time_filter import filter_date
 
 
 def filter_votes_by_proposal_outcome(proposal: str, outcome: str, votes: pd.DataFrame) -> pd.DataFrame:
@@ -174,10 +175,12 @@ if __name__ == '__main__':
     users = users[users['dao'] == dao_id]
     users = parse_reputation(df=users)
     users.reset_index(inplace=True)
+    users = filter_date(df=users, date_key='createdAt', date='01/04/2021')
 
     votes: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'votes.csv'), header=0)
     votes = votes[votes['dao'] == dao_id]
     votes.reset_index(inplace=True)
+    votes = filter_date(df=votes, date_key='createdAt', date='01/04/2021')
 
     same_vote: bool = sys.argv[2] == 'same'
     graph: nx.Graph = make_graph(users=users, votes=votes, same_vote=same_vote)

@@ -10,6 +10,7 @@
 import pandas as pd
 import os
 import sys
+from utils.time_filter import filter_date
 
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
@@ -29,12 +30,14 @@ if __name__ == '__main__':
     stakers: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'stakes.csv'), header=0)
     stakers = stakers[stakers['dao'] == dao_id]
     stakers.reset_index(inplace=True)
+    stakers = filter_date(df=stakers, date_key='createdAt', date='01/04/2021')
     stakers = stakers.groupby(['staker']).size().reset_index(name='stakes')
 
     # all users
     users: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'reputation_holders.csv'), header=0)
     users = users[users['dao'] == dao_id]
     users.reset_index(inplace=True)
+    users = filter_date(df=users, date_key='createdAt', date='01/04/2021')
 
     # calculate users who didnt stake
     users = set(users['address'].tolist())

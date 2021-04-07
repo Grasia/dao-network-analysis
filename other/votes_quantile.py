@@ -10,6 +10,7 @@
 import pandas as pd
 import os
 import sys
+from utils.time_filter import filter_date
 
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
@@ -29,12 +30,14 @@ if __name__ == '__main__':
     voters: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'votes.csv'), header=0)
     voters = voters[voters['dao'] == dao_id]
     voters.reset_index(inplace=True)
+    voters = filter_date(df=voters, date_key='createdAt', date='01/04/2021')
     voters = voters.groupby(['voter']).size().reset_index(name='votes')
 
     # all users
     users: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'reputation_holders.csv'), header=0)
     users = users[users['dao'] == dao_id]
     users.reset_index(inplace=True)
+    users = filter_date(df=users, date_key='createdAt', date='01/04/2021')
 
     # calculate users who didnt vote
     users = set(users['address'].tolist())
