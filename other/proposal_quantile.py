@@ -1,7 +1,7 @@
 """
-   Descp: Prints votes quantile
+   Descp: Prints proposers quantile
 
-   Created on: 16-mar-2021
+   Created on: 07-april-2021
 
    Copyright 2021-2022 Youssef 'FRYoussef' El Faqir El Rhazoui
         <f.r.youssef@hotmail.com>
@@ -15,7 +15,7 @@ from utils.time_filter import filter_date
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
     if len(sys.argv) != 2:
-        print('ERROR: python vote_quantile.py dao_name')
+        print('ERROR: python proposal_quantile.py dao_name')
         exit(1)
 
     daos: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'daos.csv'), header=0)
@@ -27,11 +27,11 @@ if __name__ == '__main__':
     dao_id: str = daos['id'].tolist()[0]
 
     # users who vote
-    voters: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'votes.csv'), header=0)
-    voters = voters[voters['dao'] == dao_id]
-    voters.reset_index(inplace=True)
-    voters = filter_date(df=voters, date_key='createdAt', date='01/04/2021')
-    voters = voters.groupby(['voter']).size().reset_index(name='votes')
+    proposers: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'proposals.csv'), header=0)
+    proposers = proposers[proposers['dao'] == dao_id]
+    proposers.reset_index(inplace=True)
+    proposers = filter_date(df=proposers, date_key='createdAt', date='01/04/2021')
+    proposers = proposers.groupby(['proposer']).size().reset_index(name='proposals')
 
     # all users
     users: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'reputation_holders.csv'), header=0)
@@ -41,13 +41,13 @@ if __name__ == '__main__':
 
     # calculate users who didnt vote
     users = set(users['address'].tolist())
-    vote_users = set(voters['voter'].tolist())
-    non_vote_users = users.difference(vote_users)
+    proposer_users = set(proposers['proposer'].tolist())
+    non_proposer_users = users.difference(proposer_users)
 
     # add non-vote-users to df
-    for u in non_vote_users:
-        voters = voters.append({'voter': u, 'votes': 0}, ignore_index=True)
+    for u in non_proposer_users:
+        proposers = proposers.append({'proposer': u, 'proposals': 0}, ignore_index=True)
 
-    print(f'\nTotal votes = {sum(voters["votes"].tolist())}')
-    print(f'\nMembers who have voted at least once = {len(vote_users)/len(users)*100:3.2f}%\n')
-    print(f'{voters.quantile([.25, .5, .75, .90, .95, 1])}')
+    print(f'\nTotal proposals = {sum(proposers["proposals"].tolist())}')
+    print(f'\nMembers who have proposed at least once = {len(proposer_users)/len(users)*100:3.2f}%\n')
+    print(f'{proposers.quantile([.25, .5, .75, .90, .95, 1])}')

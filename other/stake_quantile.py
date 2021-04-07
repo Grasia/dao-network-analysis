@@ -43,6 +43,10 @@ if __name__ == '__main__':
     users = set(users['address'].tolist())
     all_stakers = set(stakers['staker'].tolist())
     non_stake_users = users.difference(all_stakers)
+    # first calculate non-user stakers
+    user_stakers = all_stakers.difference(users)
+    # all stakers - non-user stakers = user stakers
+    user_stakers = all_stakers.difference(user_stakers)
 
     # add non-vote-users to df
     for u in non_stake_users:
@@ -54,4 +58,5 @@ if __name__ == '__main__':
             stakers = stakers.drop(i)
 
     print(f'\nTotal stakes = {sum(stakers["stakes"].tolist())}\n')
-    print(f'{stakers.quantile([.25, .5, .75, .90, .95, .99])}')
+    print(f'\nMembers who have staked at least once = {len(user_stakers)/len(users)*100:3.2f}%\n')
+    print(f'{stakers.quantile([.25, .5, .75, .90, .95, 1])}')
