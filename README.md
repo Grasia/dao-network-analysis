@@ -27,3 +27,8 @@ Now, you have to activate it:
 Finally, you can install the dependencies:
 
 `pip install -r requirements.txt`
+
+## Run
+To run it you have to include as env var your project path:
+
+`export PYTHONPATH="${PYTHONPATH}:/path/to/your/project/"`
