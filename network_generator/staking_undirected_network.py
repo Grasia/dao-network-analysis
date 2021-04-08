@@ -136,7 +136,7 @@ def make_graph(users: pd.DataFrame, stakes: pd.DataFrame) -> nx.Graph:
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
     if len(sys.argv) != 2:
-        print('ERROR: python staking_network.py dao_name')
+        print('ERROR: python staking_undirected_network.py dao_name')
         exit(1)
 
     daos: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'daos.csv'), header=0)
@@ -162,6 +162,6 @@ if __name__ == '__main__':
     r: float = nx.degree_assortativity_coefficient(graph, weight='weight')
     print(f'\nAssortativity coefficient = {r:3.2f}\n')
 
-    out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_stake.gml')
+    out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_stake_undirected.gml')
     nx.write_gml(graph, out_path)
     print(f'\nNetwork saved in: {out_path}\n')

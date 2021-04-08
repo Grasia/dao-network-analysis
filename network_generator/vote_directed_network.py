@@ -93,10 +93,6 @@ def get_edges_as_list(votes: pd.DataFrame, hash_index: Dict[str, int], same_vote
             if edge in weight_edges:
                 weight: int = weight_edges[edge][2]
                 weight_edges[edge] = (e_to, e_from, weight+1)
-            elif f'{e_from}{e_to}' in weight_edges:
-                k: str = f'{e_from}{e_to}'
-                weight: int = weight_edges[k][2]
-                weight_edges[k] = (e_from, e_to, weight+1)
             else:
                 weight_edges[edge] = (e_to, e_from, 1)
 
@@ -121,8 +117,8 @@ def get_nodes_and_map(users: pd.DataFrame) -> Tuple[List[Tuple[str, Dict]], Dict
     return (nodes, hash_index)
 
 
-def make_graph(users: pd.DataFrame, votes: pd.DataFrame, same_vote: bool) -> nx.Graph:
-    graph: nx.Graph = nx.Graph()
+def make_graph(users: pd.DataFrame, votes: pd.DataFrame, same_vote: bool) -> nx.DiGraph:
+    graph: nx.DiGraph = nx.DiGraph()
 
     nodes, hash_index = get_nodes_and_map(users=users)
     graph.add_nodes_from(nodes_for_adding=nodes)
@@ -161,7 +157,7 @@ def parse_reputation(df: pd.DataFrame) -> pd.DataFrame:
 if __name__ == '__main__':
     # Target DAOs --> dxDAO, dOrg, Genesis Alpha
     if len(sys.argv) != 3 or sys.argv[2] not in ['same', 'opposite']:
-        print('ERROR: python vote_network.py dao_name [same, opposite]')
+        print('ERROR: python vote_directed_network.py dao_name [same, opposite]')
         exit(1)
 
     daos: pd.DataFrame = pd.read_csv(os.path.join('data', 'raw', 'daos.csv'), header=0)
@@ -181,16 +177,17 @@ if __name__ == '__main__':
     votes = votes[votes['dao'] == dao_id]
     votes.reset_index(inplace=True)
     votes = filter_date(df=votes, date_key='createdAt', date='01/04/2021')
+    votes = votes.sort_values(by=['createdAt'])
 
     same_vote: bool = sys.argv[2] == 'same'
-    graph: nx.Graph = make_graph(users=users, votes=votes, same_vote=same_vote)
+    graph: nx.DiGraph = make_graph(users=users, votes=votes, same_vote=same_vote)
 
     r: float = nx.degree_assortativity_coefficient(graph, weight='weight')
     print(f'\nAssortativity coefficient = {r:3.2f}\n')
 
-    out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_vote.gml')
+    out_path: str = os.path.join('data', 'network', f'{sys.argv[1]}_vote_directed.gml')
     if not same_vote:
-        out_path = os.path.join('data', 'network', f'{sys.argv[1]}_opposite_vote.gml')
+        out_path = os.path.join('data', 'network', f'{sys.argv[1]}_opposite_vote_directed.gml')
 
     nx.write_gml(graph, out_path)
     print(f'\nNetwork saved in: {out_path}\n')
