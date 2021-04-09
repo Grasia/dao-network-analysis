@@ -42,7 +42,7 @@ def make_edges(stakes: pd.DataFrame, hash_index: Dict[str, int]) -> Dict[str, Tu
             e_to   = hash_index[e_to]
             e_from = hash_index[e_from]
             
-            edges[f'{e_to}{e_from}'] = (e_to, e_from)
+            edges[f'{e_from}{e_to}'] = (e_from, e_to)
 
     return edges
 

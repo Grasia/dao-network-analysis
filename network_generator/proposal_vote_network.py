@@ -37,7 +37,7 @@ def make_edges(proposer: str, votes: pd.DataFrame, hash_index: Dict[str, int]) -
                 continue
 
             e_from = hash_index[e_from]
-            edges[f'{proposer_index}{e_from}'] = (proposer_index, e_from)
+            edges[f'{e_from}{proposer_index}'] = (e_from, proposer_index)
 
     return edges
 
