@@ -45,7 +45,12 @@ def get_edges_as_list(votes: pd.DataFrame, hash_index: Dict[str, int], proposals
 
     # calculate by vote all the edges with weight 1
     for p in proposal_addresses:
-        proposer: str = proposals[proposals['id'] == p]['proposer'].tolist()[0]
+        proposer: str = proposals[proposals['id'] == p]
+        
+        if len(proposer) == 0:
+            continue
+
+        proposer = (proposer['proposer'].tolist())[0]
         
         if proposer not in hash_index.keys():
             continue
