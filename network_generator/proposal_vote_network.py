@@ -32,6 +32,10 @@ def make_edges(proposer: str, votes: pd.DataFrame, hash_index: Dict[str, int]) -
             if e_from not in hash_index.keys():
                 continue
 
+            # avoid self loops
+            if e_from == proposer:
+                continue
+
             e_from = hash_index[e_from]
             edges[f'{proposer_index}{e_from}'] = (proposer_index, e_from)
 
@@ -67,10 +71,6 @@ def get_edges_as_list(votes: pd.DataFrame, hash_index: Dict[str, int], proposals
             if edge in weight_edges:
                 weight: int = weight_edges[edge][2]
                 weight_edges[edge] = (e_to, e_from, weight+1)
-            elif f'{e_from}{e_to}' in weight_edges:
-                k: str = f'{e_from}{e_to}'
-                weight: int = weight_edges[k][2]
-                weight_edges[k] = (e_from, e_to, weight+1)
             else:
                 weight_edges[edge] = (e_to, e_from, 1)
 
@@ -95,8 +95,8 @@ def get_nodes_and_map(users: pd.DataFrame) -> Tuple[List[Tuple[str, Dict]], Dict
     return (nodes, hash_index)
 
 
-def make_graph(users: pd.DataFrame, votes: pd.DataFrame, proposals: pd.DataFrame) -> nx.Graph:
-    graph: nx.Graph = nx.Graph()
+def make_graph(users: pd.DataFrame, votes: pd.DataFrame, proposals: pd.DataFrame) -> nx.DiGraph:
+    graph: nx.DiGraph = nx.DiGraph()
 
     nodes, hash_index = get_nodes_and_map(users=users)
     graph.add_nodes_from(nodes_for_adding=nodes)
@@ -163,8 +163,8 @@ if __name__ == '__main__':
     proposals.reset_index(inplace=True)
     proposals = filter_date(df=proposals, date_key='createdAt', date='01/04/2021')
 
-    graph_votes_for: nx.Graph = make_graph(users=users, votes=votes_for, proposals=proposals)
-    graph_votes_against: nx.Graph = make_graph(users=users, votes=votes_against, proposals=proposals)
+    graph_votes_for: nx.DiGraph = make_graph(users=users, votes=votes_for, proposals=proposals)
+    graph_votes_against: nx.DiGraph = make_graph(users=users, votes=votes_against, proposals=proposals)
 
     r1: float = nx.degree_assortativity_coefficient(graph_votes_for, weight='weight')
     r2: float = nx.degree_assortativity_coefficient(graph_votes_against, weight='weight')

@@ -1,4 +1,5 @@
 graph [
+  directed 1
   node [
     id 0
     label "0"
@@ -2419,16 +2420,6 @@ graph [
   ]
   edge [
     source 19
-    target 77
-    weight 1
-  ]
-  edge [
-    source 19
-    target 273
-    weight 2
-  ]
-  edge [
-    source 19
     target 112
     weight 1
   ]
@@ -2449,12 +2440,12 @@ graph [
   ]
   edge [
     source 19
-    target 381
-    weight 1
+    target 273
+    weight 2
   ]
   edge [
     source 19
-    target 270
+    target 77
     weight 1
   ]
   edge [
@@ -2474,21 +2465,6 @@ graph [
   ]
   edge [
     source 77
-    target 112
-    weight 1
-  ]
-  edge [
-    source 77
-    target 132
-    weight 1
-  ]
-  edge [
-    source 77
-    target 94
-    weight 1
-  ]
-  edge [
-    source 77
     target 389
     weight 1
   ]
@@ -2504,47 +2480,72 @@ graph [
   ]
   edge [
     source 77
-    target 209
+    target 132
     weight 1
   ]
   edge [
-    source 97
-    target 209
-    weight 2
+    source 77
+    target 94
+    weight 1
   ]
   edge [
     source 112
-    target 270
+    target 77
     weight 1
   ]
   edge [
-    source 154
-    target 341
+    source 201
+    target 154
     weight 1
   ]
   edge [
-    source 154
-    target 201
+    source 209
+    target 97
+    weight 2
+  ]
+  edge [
+    source 209
+    target 77
     weight 1
   ]
   edge [
-    source 183
-    target 381
+    source 270
+    target 19
     weight 1
   ]
   edge [
-    source 233
-    target 381
+    source 270
+    target 112
     weight 1
   ]
   edge [
-    source 267
-    target 381
+    source 341
+    target 154
     weight 1
   ]
   edge [
-    source 376
-    target 381
+    source 381
+    target 376
+    weight 1
+  ]
+  edge [
+    source 381
+    target 267
+    weight 1
+  ]
+  edge [
+    source 381
+    target 183
+    weight 1
+  ]
+  edge [
+    source 381
+    target 19
+    weight 1
+  ]
+  edge [
+    source 381
+    target 233
     weight 1
   ]
 ]

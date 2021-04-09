@@ -35,6 +35,9 @@ def make_edges(stakes: pd.DataFrame, hash_index: Dict[str, int]) -> Dict[str, Tu
                 continue
             if e_from not in hash_index.keys():
                 continue
+            # avoid self loops
+            if e_from == e_to:
+                continue
 
             e_to   = hash_index[e_to]
             e_from = hash_index[e_from]
