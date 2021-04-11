@@ -76,13 +76,22 @@ if __name__ == '__main__':
         show_centrality = True
 
         votes_centrality: pd.DataFrame = pd.read_csv(
-            os.path.join('data', 'network', 'centrality', f'{dao_name}_vote_centrality.csv'), header=0)
+            os.path.join('data', 'network', 'network_stats', f'{dao_name}_vote_stats.csv'), header=0)
         stakes_centrality: pd.DataFrame = pd.read_csv(
-            os.path.join('data', 'network', 'centrality', f'{dao_name}_stakes_centrality.csv'), header=0)
+            os.path.join('data', 'network', 'network_stats', f'{dao_name}_stake_stats.csv'), header=0)
 
         # create dataframe with all the stats
         user_stats: dict = {
-            u: {'Reputation': 0, 'Votes': 0, 'Proposals': 0, 'Stakes': 0, 'VotePageRank': 0, 'StakePageRank': 0}
+            u: {
+                'Reputation': 0, 
+                'Votes': 0, 
+                'Proposals': 0, 
+                'Stakes': 0, 
+                'VotePageRank': 0, 
+                'StakePageRank': 0,
+                'VoteInDegree': 0,
+                'StakeInDegree': 0,
+                }
         for u in users}
 
     else:
@@ -111,15 +120,17 @@ if __name__ == '__main__':
 
     # add centrality measures if enabled
     if show_centrality:
-        #add vote page rank
+        #add vote page rank and indegree
         for i, row in votes_centrality.iterrows():
             if row['hash'] in user_stats: 
                 user_stats[row['hash']]['VotePageRank'] = row['pageranks']
+                user_stats[row['hash']]['VoteInDegree'] = row['indegree']
 
         #add stake page rank
         for i, row in stakes_centrality.iterrows():
             if row['hash'] in user_stats: 
                 user_stats[row['hash']]['StakePageRank'] = row['pageranks']
+                user_stats[row['hash']]['StakeInDegree'] = row['indegree']
 
         # to dataframe
         user_stats: list = [
@@ -131,6 +142,8 @@ if __name__ == '__main__':
                 'Stakes': user_stats[u]['Stakes'],
                 'VotePageRank': user_stats[u]['VotePageRank'],
                 'StakePageRank': user_stats[u]['StakePageRank'],
+                'VoteInDegree': user_stats[u]['VoteInDegree'],
+                'StakeInDegree': user_stats[u]['StakeInDegree'],
             }
         for u in user_stats]
 
@@ -155,7 +168,9 @@ if __name__ == '__main__':
 
     if show_centrality:
         print(f'Gini of vote pagerank = {gini(list_of_values=user_stats["VotePageRank"].tolist())}.')
-        print(f'Gini of stake pagerank = {gini(list_of_values=user_stats["StakePageRank"].tolist())}.\n')
+        print(f'Gini of stake pagerank = {gini(list_of_values=user_stats["StakePageRank"].tolist())}.')
+        print(f'Gini of vote in-degree = {gini(list_of_values=user_stats["VoteInDegree"].tolist())}.')
+        print(f'Gini of stake in-degree = {gini(list_of_values=user_stats["StakeInDegree"].tolist())}.\n')
     else:
         print('\n')
 
@@ -170,5 +185,9 @@ if __name__ == '__main__':
     if show_centrality:
         rho4, p4 = spearmanr(user_stats['Reputation'], user_stats['VotePageRank'])
         rho5, p5 = spearmanr(user_stats['Reputation'], user_stats['StakePageRank'])
+        rho6, p6 = spearmanr(user_stats['Reputation'], user_stats['VoteInDegree'])
+        rho7, p7 = spearmanr(user_stats['Reputation'], user_stats['StakeInDegree'])
         print(f'Spearman rank (Reputation-Vote Pagerank) = {rho4}, p-value = {p4}.')
         print(f'Spearman rank (Reputation-Stake Pagerank) = {rho5}, p-value = {p5}.')
+        print(f'Spearman rank (Reputation-Vote in-degree) = {rho6}, p-value = {p6}.')
+        print(f'Spearman rank (Reputation-Stake in-degree) = {rho7}, p-value = {p7}.')
